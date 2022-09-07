@@ -1,8 +1,8 @@
 # musical_instrument_embedding
 
-Thanks for your interests in our musical instrument embedding work!!  Apologies on the delay.  Feel free to contact me（<xuanshi@usc.edu>) if you have any problems.  I generally reply emails in 24 hours.
-
+Thanks for your interests in our musical instrument embedding work!!  
 The code is continuely tidying up.  The current version still has redundant part for development.   
+Feel free to contact me（<xuanshi@usc.edu>) if you have any problems.  I generally reply emails in 24 hours.
 
 Train:
 ```
