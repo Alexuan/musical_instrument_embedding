@@ -1,14 +1,13 @@
-# status settings
-prefix = 'nii_sinc_midi_aug_l8_asm_instr'
-description = 'sincnet: True, initialization: MIDI, Augmentation: True, Classifier: A-Softmax, LDE: L=8,'
+prefix = 'nsynth_sinc_midi_aug_l8_asm'
+description = 'sincnet: True, initialization: MIDI, Augmentation: True, Classifier: A-Softmax, LDE: L=8'
 engine = 'vanilla'
 is_train = True
 gpu_ids = [0]
 seed = 100
-pretrain_model_pth = ''
-sr=24000,
-num_instrument = 15,
-num_instrument_fml = 15,
+pretrain_model_pth = 'log/nsynth_sinc_midi_aug_l8_asm100/14_2.h5'
+num_instrument = 1006,
+num_instrument_fml = 11,
+sr=16000,
 # model settings
 model = dict(
     type='instr_emd_sinc',
@@ -27,7 +26,7 @@ model = dict(
     ),
     backbone=dict(
         type='resnet34',
-        pretrained='log/nsynth_sinc_midi_aug_l8_asm_s100/8_77.h5',
+        pretrained='',
     ),
     neck=dict(
         type='LDE',
@@ -54,19 +53,19 @@ criterion = dict(
 )
 loss_weight = dict(
     label_A=1,
-    label_B=0,
+    label_B=0
 )
-# dataset settings
+
 feat_type='wav'
 data_train = dict(
-    dataset_mode='nii',
-    dataroot='data/NII-URMP',
-    datafile='scp_seg_200f/train.lst.validated.seg',
+    dataset_mode='nsynth',
+    dataroot='data/nsynth/nsynth-train',
+    datafile='examples.json',
     feat_type=feat_type,
     is_train=True,
     num_instr=num_instrument,
     num_instr_fml=num_instrument_fml,
-    batch_size=32,
+    batch_size=128,
     num_threads=10,
     sr=sr,
     in_memory=True,
@@ -86,15 +85,15 @@ data_train = dict(
     )
 )
 data_valid = dict(
-    dataset_mode='nii',
-    dataroot='data/NII-URMP',
-    datafile='scp_seg_200f/val.lst.validated.seg',
+    dataset_mode='nsynth',
+    dataroot='data/nsynth/nsynth-valid',
+    datafile='examples.json',
     feat_type=feat_type,
-    is_train=True,
+    is_train=False,
     num_instr=num_instrument,
     num_instr_fml=num_instrument_fml,
     batch_size=128,
-    num_threads=10,
+    num_threads=4,
     sr=sr,
     in_memory=True,
     one_hot_all=False,
@@ -104,24 +103,24 @@ data_valid = dict(
     one_hot_instr_src=False,
     one_hot_instr_family=False,
     encode_cat=True,
-    shuffle=True,
-    is_augment=True,
+    shuffle=False,
+    is_augment=False,
     augment=dict(
         type='stitch',
         min_sec=3,
-        max_sec=5,
+        max_sec=8,
     )
 )
 data_test = dict(
-    dataset_mode='nii',
-    dataroot='data/NII-URMP',
-    datafile='scp_seg_200f/test.lst.validated.seg',
+    dataset_mode='nsynth',
+    dataroot='data/nsynth/nsynth-test',
+    datafile='examples.json',
     feat_type=feat_type,
-    is_train=True,
+    is_train=False,
     num_instr=num_instrument,
     num_instr_fml=num_instrument_fml,
     batch_size=128,
-    num_threads=10,
+    num_threads=4,
     sr=sr,
     in_memory=True,
     one_hot_all=False,
@@ -131,12 +130,12 @@ data_test = dict(
     one_hot_instr_src=False,
     one_hot_instr_family=False,
     encode_cat=True,
-    shuffle=True,
-    is_augment=True,
+    shuffle=False,
+    is_augment=False,
     augment=dict(
         type='stitch',
         min_sec=3,
-        max_sec=5,
+        max_sec=8,
     )
 )
 # optimizer
@@ -150,7 +149,7 @@ optimizer = dict(
     grad_clip=None,
     lr_scheduler=dict(
         type='ScheduledOptim',
-        n_warmup_steps=1000,
+        n_warmup_steps=8000,
         base_lr=1e-6,
         max_lr=1e-3,
         step_size_up=8000,
@@ -166,7 +165,7 @@ runner = dict(type='EpochBasedRunner', max_epochs=30)
 log_config = dict(
     interval=1,
     log_level = 'INFO',
-    dir='log/'+prefix,
+    dir='log/'+ prefix + str(seed),
     hooks=[
         dict(type='TextLoggerHook'),
     ])
@@ -175,5 +174,5 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 
 decode = dict(
-    dir='data/nii/nii-test'
+    dir='data/nsynth/nsynth-train'
 )
